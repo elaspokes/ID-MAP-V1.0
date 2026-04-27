@@ -27,6 +27,8 @@ import VerifikasiLokasiPage from './pages/verifikator/VerifikasiLokasiPage';
 import DataLapanganPage from './pages/verifikator/DataLapanganPage';
 import LaporanVerifikatorPage from './pages/verifikator/LaporanVerifikatorPage';
 import PengaturanVerifikatorPage from './pages/verifikator/PengaturanVerifikatorPage';
+import LoginPage from './pages/LoginPage';
+import QRISPaymentPage from './pages/QRISPaymentPage';
 
 export default function App() {
   return (
@@ -37,6 +39,8 @@ export default function App() {
       <Route path="/program" element={<ProgramPage />} />
       <Route path="/dampak" element={<DampakPage />} />
       <Route path="/edukasi" element={<EdukasiPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/qris" element={<QRISPaymentPage />} />
 
       {/* Admin Dashboard */}
       <Route path="/admin" element={<IDMAPAdminDashboard />} />

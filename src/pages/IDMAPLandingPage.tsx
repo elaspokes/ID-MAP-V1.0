@@ -2,12 +2,15 @@ import { Link } from 'react-router-dom';
 import {
   MapPin, TreePine, QrCode, Search as SearchIcon, Award, TrendingUp,
   Users, Sprout, Wind, DollarSign, ExternalLink, Share2, MessageCircle, Play,
-  Leaf, Eye, Globe
+  Leaf, Eye, Globe, Shield, ChevronRight
 } from 'lucide-react';
+import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import StatCard from '../components/ui/StatCard';
 import IDMAPInteractiveMapSection from '../components/IDMAPInteractiveMapSection';
+
+const hasClerk = !!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 const steps = [
   { icon: <SearchIcon className="w-6 h-6" />, title: '1. Pilih Program', desc: 'Pilih lokasi dan program restorasi mangrove yang ingin didukung.' },
@@ -63,12 +66,33 @@ export default function IDMAPLandingPage() {
             ))}
           </div>
           <div className="flex items-center gap-3">
-            <Link to="/user">
-              <Button variant="ghost" size="sm" className="!text-gray-300 hover:!text-white">Masuk</Button>
-            </Link>
-            <Link to="/user">
-              <Button variant="neon" size="sm">Daftar</Button>
-            </Link>
+            {hasClerk ? (
+              <>
+                <SignedOut>
+                  <SignInButton mode="modal">
+                    <Button variant="ghost" size="sm" className="!text-gray-300 hover:!text-white">Masuk</Button>
+                  </SignInButton>
+                  <SignUpButton mode="modal">
+                    <Button variant="neon" size="sm">Daftar</Button>
+                  </SignUpButton>
+                </SignedOut>
+                <SignedIn>
+                  <Link to="/user">
+                    <Button variant="ghost" size="sm" className="!text-gray-300 hover:!text-white">Dashboard</Button>
+                  </Link>
+                  <UserButton />
+                </SignedIn>
+              </>
+            ) : (
+              <>
+                <Link to="/user">
+                  <Button variant="ghost" size="sm" className="!text-gray-300 hover:!text-white">Masuk</Button>
+                </Link>
+                <Link to="/user">
+                  <Button variant="neon" size="sm">Daftar</Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -120,16 +144,21 @@ export default function IDMAPLandingPage() {
           <div className="flex justify-center lg:justify-end">
             <div className="relative">
               <div className="absolute -inset-4 bg-mangrove-neon/10 rounded-3xl blur-2xl" />
-              <Card glass className="relative w-72 text-center">
-                <p className="text-sm font-semibold text-mangrove-neon mb-3">Dukung Lewat QRIS</p>
-                <p className="text-xs text-gray-400 mb-4">Scan untuk berkontribusi</p>
-                <div className="w-40 h-40 mx-auto bg-white rounded-xl flex items-center justify-center mb-4">
-                  <QrCode className="w-28 h-28 text-mangrove-deep" />
-                </div>
-                <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
-                  <span className="font-semibold text-white">ID-MAP QRIS</span>
-                </div>
-              </Card>
+              <Link to="/qris">
+                <Card glass className="relative w-72 text-center group cursor-pointer hover:border-mangrove-neon/30 transition-all">
+                  <p className="text-sm font-semibold text-mangrove-neon mb-3">Dukung Lewat QRIS</p>
+                  <p className="text-xs text-gray-400 mb-4">Scan untuk berkontribusi</p>
+                  <div className="w-40 h-40 mx-auto bg-white rounded-xl flex items-center justify-center mb-4 group-hover:shadow-lg group-hover:shadow-mangrove-neon/10 transition-all">
+                    <QrCode className="w-28 h-28 text-mangrove-deep" />
+                  </div>
+                  <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
+                    <span className="font-semibold text-white">ID-MAP QRIS</span>
+                  </div>
+                  <div className="mt-3 py-2 bg-mangrove-neon/10 rounded-lg text-xs font-semibold text-mangrove-neon group-hover:bg-mangrove-neon group-hover:text-mangrove-deep transition-all">
+                    Mulai Donasi
+                  </div>
+                </Card>
+              </Link>
             </div>
           </div>
         </div>
@@ -184,8 +213,50 @@ export default function IDMAPLandingPage() {
         </div>
       </section>
 
+      {/* Akses Cepat */}
+      <section className="bg-mangrove-mint py-16">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-2xl font-bold text-mangrove-deep text-center mb-3">Akses Cepat</h2>
+          <p className="text-sm text-mangrove-muted text-center mb-8">Masuk ke dashboard pengelolaan platform</p>
+          <div className="grid sm:grid-cols-2 gap-4 max-w-lg mx-auto">
+            <Link to="/login?role=admin" className="group">
+              <div className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-mangrove-neon/30 hover:shadow-lg hover:shadow-mangrove-neon/5 transition-all">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-mangrove-deep rounded-xl flex items-center justify-center">
+                      <Shield className="w-5 h-5 text-mangrove-neon" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-mangrove-deep">Dashboard Admin</p>
+                      <p className="text-xs text-mangrove-muted">Kelola platform</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-mangrove-neon transition-colors" />
+                </div>
+              </div>
+            </Link>
+            <Link to="/login?role=verifikator" className="group">
+              <div className="bg-white rounded-2xl p-6 border border-gray-100 hover:border-mangrove-fresh/30 hover:shadow-lg hover:shadow-mangrove-fresh/5 transition-all">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-mangrove-teal rounded-xl flex items-center justify-center">
+                      <Globe className="w-5 h-5 text-mangrove-fresh" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-mangrove-deep">Dashboard Verifikator</p>
+                      <p className="text-xs text-mangrove-muted">Verifikasi lapangan</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-mangrove-fresh transition-colors" />
+                </div>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Supporters */}
-      <section className="bg-mangrove-mint py-12">
+      <section className="bg-white py-12">
         <div className="max-w-7xl mx-auto px-6">
           <p className="text-center text-sm text-mangrove-muted mb-6">Didukung oleh:</p>
           <div className="flex flex-wrap items-center justify-center gap-8">
