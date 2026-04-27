@@ -8,6 +8,12 @@ import PetaMangrovePage from './pages/PetaMangrovePage';
 import ProgramPage from './pages/ProgramPage';
 import DampakPage from './pages/DampakPage';
 import EdukasiPage from './pages/EdukasiPage';
+import ProgramSayaPage from './pages/user/ProgramSayaPage';
+import KontribusiSayaPage from './pages/user/KontribusiSayaPage';
+import DampakSayaPage from './pages/user/DampakSayaPage';
+import SertifikatPage from './pages/user/SertifikatPage';
+import NotifikasiPage from './pages/user/NotifikasiPage';
+import PengaturanPage from './pages/user/PengaturanPage';
 
 export default function App() {
   return (
@@ -21,6 +27,12 @@ export default function App() {
       <Route path="/admin" element={<IDMAPAdminDashboard />} />
       <Route path="/verifikator" element={<IDMAPVerifikatorDashboard />} />
       <Route path="/user" element={<IDMAPUserDashboard />} />
+      <Route path="/user/program" element={<ProgramSayaPage />} />
+      <Route path="/user/kontribusi" element={<KontribusiSayaPage />} />
+      <Route path="/user/dampak" element={<DampakSayaPage />} />
+      <Route path="/user/sertifikat" element={<SertifikatPage />} />
+      <Route path="/user/notifikasi" element={<NotifikasiPage />} />
+      <Route path="/user/pengaturan" element={<PengaturanPage />} />
     </Routes>
   );
 }

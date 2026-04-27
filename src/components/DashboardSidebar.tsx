@@ -29,8 +29,8 @@ export default function DashboardSidebar({ variant, menuItems }: DashboardSideba
       </div>
 
       <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
-        {menuItems.map((item, i) => {
-          const isActive = i === 0 || (item.href && location.pathname === item.href);
+        {menuItems.map((item) => {
+          const isActive = item.href ? location.pathname === item.href : false;
           return (
             <Link
               key={item.label}

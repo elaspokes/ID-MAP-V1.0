@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  Home, FolderOpen, Heart, Leaf, Award, Bell, Settings,
+  Home, Award,
   DollarSign, TreePine, Wind, Hash, Eye, Download, CheckCircle2,
   QrCode, MapPin, Upload, Camera, Send, User, Mail, Phone, Calendar
 } from 'lucide-react';
@@ -12,16 +12,7 @@ import ProgressBar from '../components/ui/ProgressBar';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import Table from '../components/ui/Table';
-
-const menuItems = [
-  { icon: <Home className="w-5 h-5" />, label: 'Beranda', href: '/user' },
-  { icon: <FolderOpen className="w-5 h-5" />, label: 'Program Saya' },
-  { icon: <Heart className="w-5 h-5" />, label: 'Kontribusi Saya' },
-  { icon: <Leaf className="w-5 h-5" />, label: 'Dampak Saya' },
-  { icon: <Award className="w-5 h-5" />, label: 'Sertifikat' },
-  { icon: <Bell className="w-5 h-5" />, label: 'Notifikasi' },
-  { icon: <Settings className="w-5 h-5" />, label: 'Pengaturan' },
-];
+import menuItems from './user/userMenuItems';
 
 const contributions = [
   { method: 'Donasi via QRIS', date: '24 Mei 2024', amount: 'Rp 250.000' },
