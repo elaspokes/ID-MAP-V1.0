@@ -57,8 +57,13 @@ export default function IDMAPLandingPage() {
 
       {/* Hero */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-mangrove-deep via-mangrove-teal to-mangrove-deep" />
+        {/* Background image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('/images/hero-mangrove.png')" }}
+        />
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-mangrove-deep/60" />
         {/* Decorative SVG overlay */}
         <svg className="absolute inset-0 w-full h-full opacity-5" xmlns="http://www.w3.org/2000/svg">
           <defs>
