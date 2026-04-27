@@ -2,19 +2,12 @@ import { Link } from 'react-router-dom';
 import {
   MapPin, TreePine, QrCode, Search as SearchIcon, Award, TrendingUp,
   Users, Sprout, Wind, DollarSign, ExternalLink, Share2, MessageCircle, Play,
-  Leaf, ChevronRight, Eye, Globe
+  Leaf, Eye, Globe
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import StatCard from '../components/ui/StatCard';
-import MangroveMap from '../components/MangroveMap';
-
-const locations = [
-  { name: 'KKPD Teluk Bintuni', area: 'Papua Barat', color: 'bg-mangrove-fresh' },
-  { name: 'Desa Timbulsloko', area: 'Demak, Jawa Tengah', color: 'bg-blue-500' },
-  { name: 'Taman Nasional Sembilang', area: 'Sumatera Selatan', color: 'bg-amber-500' },
-  { name: 'Kecamatan Kwandang', area: 'Gorontalo Utara', color: 'bg-purple-500' },
-];
+import IDMAPInteractiveMapSection from '../components/IDMAPInteractiveMapSection';
 
 const steps = [
   { icon: <SearchIcon className="w-6 h-6" />, title: '1. Pilih Program', desc: 'Pilih lokasi dan program restorasi mangrove yang ingin didukung.' },
@@ -32,16 +25,41 @@ const impacts = [
 
 const supporters = ['BANK INDONESIA', 'KLHK', 'pesisir', 'kkpd', 'BRGM'];
 
+const navLinks: { label: string; to: string }[] = [
+  { label: 'Beranda', to: '/' },
+  { label: 'Tentang', to: '/tentang' },
+  { label: 'Peta Mangrove', to: '/peta-mangrove' },
+  { label: 'Program', to: '/program' },
+  { label: 'Dampak', to: '/dampak' },
+  { label: 'Edukasi', to: '/edukasi' },
+];
+
+const footerLinkMap: Record<string, string> = {
+  'Beranda': '/',
+  'Peta Mangrove': '/peta-mangrove',
+  'Program': '/program',
+  'Dampak': '/dampak',
+  'Edukasi': '/edukasi',
+  'Tentang ID-MAP': '/tentang',
+  'Tim': '/tentang',
+  'Mitra': '/tentang',
+  'Karir': '/tentang',
+  'FAQ': '/edukasi',
+  'Panduan': '/edukasi',
+  'Kontak Kami': '/tentang',
+  'Kebijakan Privasi': '/tentang',
+};
+
 export default function IDMAPLandingPage() {
   return (
     <div className="min-h-screen bg-mangrove-deep text-white">
       {/* Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-mangrove-deep/70 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <span className="text-xl font-extrabold text-mangrove-neon tracking-tight">ID-MAP</span>
+          <Link to="/" className="text-xl font-extrabold text-mangrove-neon tracking-tight">ID-MAP</Link>
           <div className="hidden md:flex items-center gap-8 text-sm text-gray-300">
-            {['Beranda', 'Tentang', 'Peta Mangrove', 'Program', 'Dampak', 'Edukasi'].map((m) => (
-              <a key={m} href="#" className="hover:text-white transition-colors">{m}</a>
+            {navLinks.map((m) => (
+              <Link key={m.label} to={m.to} className="hover:text-white transition-colors">{m.label}</Link>
             ))}
           </div>
           <div className="flex items-center gap-3">
@@ -57,14 +75,11 @@ export default function IDMAPLandingPage() {
 
       {/* Hero */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden">
-        {/* Background image */}
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('/images/hero-mangrove.png')" }}
         />
-        {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-r from-mangrove-deep/80 via-mangrove-deep/50 to-mangrove-deep/40" />
-        {/* Decorative SVG overlay */}
         <svg className="absolute inset-0 w-full h-full opacity-5" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <pattern id="hexgrid" width="50" height="43.3" patternUnits="userSpaceOnUse" patternTransform="rotate(30)">
@@ -73,7 +88,6 @@ export default function IDMAPLandingPage() {
           </defs>
           <rect width="100%" height="100%" fill="url(#hexgrid)" />
         </svg>
-        {/* Radial glow */}
         <div className="absolute top-1/2 left-1/4 w-96 h-96 bg-mangrove-fresh/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
         <div className="absolute bottom-0 right-0 w-80 h-80 bg-mangrove-neon/5 rounded-full blur-3xl" />
 
@@ -89,12 +103,16 @@ export default function IDMAPLandingPage() {
               ID-MAP mengintegrasikan data, pembiayaan berbasis QRIS, dan monitoring dampak lingkungan secara real-time.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Button variant="neon" size="lg">
-                <MapPin className="w-5 h-5" /> Jelajahi Peta
-              </Button>
-              <Button variant="outline" size="lg">
-                <Sprout className="w-5 h-5" /> Dukung Sekarang
-              </Button>
+              <Link to="/peta-mangrove">
+                <Button variant="neon" size="lg">
+                  <MapPin className="w-5 h-5" /> Jelajahi Peta
+                </Button>
+              </Link>
+              <Link to="/program">
+                <Button variant="outline" size="lg">
+                  <Sprout className="w-5 h-5" /> Dukung Sekarang
+                </Button>
+              </Link>
             </div>
           </div>
 
@@ -127,40 +145,10 @@ export default function IDMAPLandingPage() {
         </div>
       </section>
 
-      {/* Interactive Map */}
-      <section className="max-w-7xl mx-auto px-6 py-24">
-        <div className="grid lg:grid-cols-5 gap-8">
-          <div className="lg:col-span-3">
-            <h2 className="text-3xl font-bold mb-2">Jelajahi Peta Mangrove Indonesia</h2>
-            <p className="text-gray-400 mb-6">
-              Pantau sebaran, kondisi, dan program restorasi mangrove secara interaktif.
-            </p>
-            <MangroveMap className="h-80 lg:h-96" />
-            <Button variant="outline" size="md" className="mt-6">
-              <MapPin className="w-4 h-4" /> Buka Peta Interaktif
-            </Button>
-          </div>
-          <div className="lg:col-span-2">
-            <Card dark className="h-full">
-              <h3 className="text-lg font-bold mb-6">Lokasi Program Aktif</h3>
-              <div className="space-y-5">
-                {locations.map((loc) => (
-                  <div key={loc.name} className="flex items-start gap-3">
-                    <div className={`w-2.5 h-2.5 rounded-full mt-1.5 ${loc.color} shadow-lg`} />
-                    <div>
-                      <p className="font-semibold text-sm">{loc.name}</p>
-                      <p className="text-xs text-gray-400">{loc.area}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <Button variant="outline" size="sm" className="mt-8 w-full">
-                Lihat Semua Lokasi <ChevronRight className="w-4 h-4" />
-              </Button>
-            </Card>
-          </div>
-        </div>
-      </section>
+      {/* Interactive Map Section */}
+      <div className="mt-24">
+        <IDMAPInteractiveMapSection />
+      </div>
 
       {/* Contribution Steps */}
       <section className="bg-mangrove-mint py-24">
@@ -215,7 +203,7 @@ export default function IDMAPLandingPage() {
         <div className="max-w-7xl mx-auto px-6 py-16">
           <div className="grid md:grid-cols-5 gap-12">
             <div className="md:col-span-1">
-              <span className="text-xl font-extrabold text-mangrove-neon">ID-MAP</span>
+              <Link to="/" className="text-xl font-extrabold text-mangrove-neon">ID-MAP</Link>
               <p className="text-xs text-gray-400 mt-2">Integrated Digital Mangrove<br />& Coastal Platform</p>
               <div className="flex gap-3 mt-4">
                 {[ExternalLink, Share2, Play, MessageCircle].map((Icon, i) => (
@@ -234,7 +222,11 @@ export default function IDMAPLandingPage() {
                 <h4 className="font-semibold text-sm mb-4">{col.title}</h4>
                 <ul className="space-y-2">
                   {col.links.map((l) => (
-                    <li key={l}><a href="#" className="text-sm text-gray-400 hover:text-white transition-colors">{l}</a></li>
+                    <li key={l}>
+                      <Link to={footerLinkMap[l] || '/'} className="text-sm text-gray-400 hover:text-white transition-colors">
+                        {l}
+                      </Link>
+                    </li>
                   ))}
                 </ul>
               </div>
