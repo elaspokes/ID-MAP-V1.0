@@ -10,6 +10,8 @@ import Card from '../components/ui/Card';
 import StatCard from '../components/ui/StatCard';
 import IDMAPInteractiveMapSection from '../components/IDMAPInteractiveMapSection';
 
+const hasClerk = !!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
 const steps = [
   { icon: <SearchIcon className="w-6 h-6" />, title: '1. Pilih Program', desc: 'Pilih lokasi dan program restorasi mangrove yang ingin didukung.' },
   { icon: <QrCode className="w-6 h-6" />, title: '2. Berkontribusi', desc: 'Dukung program melalui pembayaran aman dan berbasis QRIS.' },
@@ -64,20 +66,33 @@ export default function IDMAPLandingPage() {
             ))}
           </div>
           <div className="flex items-center gap-3">
-            <SignedOut>
-              <SignInButton mode="modal">
-                <Button variant="ghost" size="sm" className="!text-gray-300 hover:!text-white">Masuk</Button>
-              </SignInButton>
-              <SignUpButton mode="modal">
-                <Button variant="neon" size="sm">Daftar</Button>
-              </SignUpButton>
-            </SignedOut>
-            <SignedIn>
-              <Link to="/user">
-                <Button variant="ghost" size="sm" className="!text-gray-300 hover:!text-white">Dashboard</Button>
-              </Link>
-              <UserButton />
-            </SignedIn>
+            {hasClerk ? (
+              <>
+                <SignedOut>
+                  <SignInButton mode="modal">
+                    <Button variant="ghost" size="sm" className="!text-gray-300 hover:!text-white">Masuk</Button>
+                  </SignInButton>
+                  <SignUpButton mode="modal">
+                    <Button variant="neon" size="sm">Daftar</Button>
+                  </SignUpButton>
+                </SignedOut>
+                <SignedIn>
+                  <Link to="/user">
+                    <Button variant="ghost" size="sm" className="!text-gray-300 hover:!text-white">Dashboard</Button>
+                  </Link>
+                  <UserButton />
+                </SignedIn>
+              </>
+            ) : (
+              <>
+                <Link to="/user">
+                  <Button variant="ghost" size="sm" className="!text-gray-300 hover:!text-white">Masuk</Button>
+                </Link>
+                <Link to="/user">
+                  <Button variant="neon" size="sm">Daftar</Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>

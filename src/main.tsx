@@ -12,14 +12,22 @@ if (!CLERK_PUBLISHABLE_KEY) {
   console.warn('Missing VITE_CLERK_PUBLISHABLE_KEY — Clerk auth will not work')
 }
 
+const appTree = (
+  <AuthProvider>
+    <HashRouter>
+      <App />
+    </HashRouter>
+  </AuthProvider>
+)
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY || ''}>
-      <AuthProvider>
-        <HashRouter>
-          <App />
-        </HashRouter>
-      </AuthProvider>
-    </ClerkProvider>
+    {CLERK_PUBLISHABLE_KEY ? (
+      <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
+        {appTree}
+      </ClerkProvider>
+    ) : (
+      appTree
+    )}
   </StrictMode>,
 )

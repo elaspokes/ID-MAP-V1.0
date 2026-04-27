@@ -9,7 +9,7 @@ const CREDENTIALS: Record<string, { password: string; role: 'admin' | 'verifikat
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<{ email: string; role: 'admin' | 'verifikator' | null; name: string } | null>(() => {
     const stored = localStorage.getItem('idmap_auth');
-    return stored ? JSON.parse(stored) : null;
+    try { return stored ? JSON.parse(stored) : null; } catch { return null; }
   });
 
   useEffect(() => {
