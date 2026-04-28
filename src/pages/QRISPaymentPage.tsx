@@ -65,7 +65,7 @@ export default function QRISPaymentPage() {
   const handlePaymentComplete = () => {
     setProcessing(true);
     setTimeout(() => {
-      const token = btoa(`${email}:${Date.now()}`).slice(0, 20);
+      const token = crypto.randomUUID();
       const link = `${window.location.origin}${window.location.pathname}#/user?token=${token}`;
       setMagicLink(link);
       loginWithMagicLink(email, whatsapp, selectedPackage || '15k', token);
