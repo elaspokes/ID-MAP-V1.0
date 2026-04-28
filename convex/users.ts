@@ -26,10 +26,12 @@ export const getByEmail = query({
 export const getByRole = query({
   args: { role: v.string() },
   handler: async (ctx, args) => {
-    return await ctx.db
+    const users = await ctx.db
       .query("users")
       .withIndex("by_role", (q) => q.eq("role", args.role as "admin" | "verifikator" | "kontributor" | "csr_partner"))
       .collect();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    return users.map(({ password: _p, ...rest }) => rest);
   },
 });
 

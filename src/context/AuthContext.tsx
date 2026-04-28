@@ -3,10 +3,13 @@ import { useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { AuthContext } from './authTypes';
 
-const FALLBACK_CREDENTIALS: Record<string, { password: string; role: 'admin' | 'verifikator'; name: string }> = {
-  'admin@id-map.co.id': { password: 'admin123', role: 'admin', name: 'Admin ID-MAP' },
-  'verifikator@id-map.co.id': { password: 'verifikator123', role: 'verifikator', name: 'Bambang Sudirjo' },
-};
+const DEV_FALLBACK_CREDENTIALS: Record<string, { password: string; role: 'admin' | 'verifikator'; name: string }> | null =
+  import.meta.env.DEV
+    ? {
+        'admin@id-map.co.id': { password: 'admin123', role: 'admin', name: 'Admin ID-MAP' },
+        'verifikator@id-map.co.id': { password: 'verifikator123', role: 'verifikator', name: 'Bambang Sudirjo' },
+      }
+    : null;
 
 function AuthProviderInner({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<{ email: string; role: 'admin' | 'verifikator' | null; name: string } | null>(() => {
@@ -35,10 +38,12 @@ function AuthProviderInner({ children }: { children: ReactNode }) {
     } catch {
       // Convex unavailable, fall through to local credentials
     }
-    const cred = FALLBACK_CREDENTIALS[email];
-    if (cred && cred.password === password && cred.role === role) {
-      setUser({ email, role: cred.role, name: cred.name });
-      return true;
+    if (DEV_FALLBACK_CREDENTIALS) {
+      const cred = DEV_FALLBACK_CREDENTIALS[email];
+      if (cred && cred.password === password && cred.role === role) {
+        setUser({ email, role: cred.role, name: cred.name });
+        return true;
+      }
     }
     return false;
   }, [convexLogin]);
