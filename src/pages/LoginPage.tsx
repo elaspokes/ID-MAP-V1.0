@@ -18,20 +18,23 @@ export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
-    setTimeout(() => {
-      const success = login(email, password, role);
+    try {
+      const success = await login(email, password, role);
       if (success) {
         navigate(role === 'admin' ? '/admin' : '/verifikator');
       } else {
         setError('Email atau password salah. Silakan coba lagi.');
       }
+    } catch {
+      setError('Terjadi kesalahan. Silakan coba lagi.');
+    } finally {
       setLoading(false);
-    }, 800);
+    }
   };
 
   const isAdmin = role === 'admin';

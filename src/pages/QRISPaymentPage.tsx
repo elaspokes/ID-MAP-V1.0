@@ -4,6 +4,8 @@ import {
   ArrowLeft, QrCode, Mail, Phone, Sprout, TreePine, Check,
   ChevronRight, Shield, Sparkles, ExternalLink
 } from 'lucide-react';
+import { useMutation } from 'convex/react';
+import { api } from '../../convex/_generated/api';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import { useAuth } from '../hooks/useAuth';
@@ -48,6 +50,7 @@ export default function QRISPaymentPage() {
 
   const { loginWithMagicLink } = useAuth();
   const navigate = useNavigate();
+  const createTransaction = useMutation(api.transactions.create);
 
   const handleInfoSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,6 +69,22 @@ export default function QRISPaymentPage() {
       const link = `${window.location.origin}${window.location.pathname}#/user?token=${token}`;
       setMagicLink(link);
       loginWithMagicLink(email, whatsapp, selectedPackage || '15k');
+
+      const pkg = packages.find(p => p.id === selectedPackage);
+      createTransaction({
+        transactionId: `TRX-${Date.now()}`,
+        donorName: email.split('@')[0],
+        donorEmail: email,
+        amount: pkg?.rawPrice ?? 15000,
+        amountFormatted: pkg?.price ?? 'Rp 15.000',
+        method: 'QRIS',
+        program: 'Donasi Mangrove',
+        date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }),
+        status: 'berhasil',
+        whatsapp,
+        packageType: selectedPackage || '15k',
+      }).catch(() => { /* Convex unavailable */ });
+
       setProcessing(false);
       setStep('success');
     }, 2000);

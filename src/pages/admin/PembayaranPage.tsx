@@ -3,6 +3,8 @@ import {
   Search, Download, Filter, Eye, CheckCircle2, QrCode
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useQuery } from 'convex/react';
+import { api } from '../../../convex/_generated/api';
 import DashboardLayout from '../../components/DashboardLayout';
 import StatCard from '../../components/ui/StatCard';
 import Card from '../../components/ui/Card';
@@ -11,14 +13,14 @@ import Button from '../../components/ui/Button';
 import Table from '../../components/ui/Table';
 import menuItems from './adminMenuItems';
 
-const revenueData = [
+const fallbackRevenue = [
   { month: 'Jan', value: 12 }, { month: 'Feb', value: 18 }, { month: 'Mar', value: 15 },
   { month: 'Apr', value: 22 }, { month: 'Mei', value: 28 }, { month: 'Jun', value: 35 },
   { month: 'Jul', value: 32 }, { month: 'Agu', value: 38 }, { month: 'Sep', value: 42 },
   { month: 'Okt', value: 48 }, { month: 'Nov', value: 55 }, { month: 'Des', value: 65 },
 ];
 
-const transactions = [
+const fallbackTransactions = [
   { id: 'TRX-20240524-001', donor: 'Andi Pratama', amount: 'Rp 500.000', method: 'QRIS', program: 'Teluk Bintuni', date: '24 Mei 2024, 14:32', status: 'Berhasil', badge: 'green' as const },
   { id: 'TRX-20240524-002', donor: 'PT Hijau Lestari', amount: 'Rp 25.000.000', method: 'QRIS', program: 'TN Sembilang', date: '24 Mei 2024, 11:15', status: 'Berhasil', badge: 'green' as const },
   { id: 'TRX-20240523-003', donor: 'Dewi Lestari', amount: 'Rp 250.000', method: 'QRIS', program: 'Desa Timbulsloko', date: '23 Mei 2024, 09:45', status: 'Berhasil', badge: 'green' as const },
@@ -28,7 +30,29 @@ const transactions = [
   { id: 'TRX-20240521-007', donor: 'Ahmad Fauzi', amount: 'Rp 100.000', method: 'QRIS', program: 'Desa Timbulsloko', date: '21 Mei 2024, 10:30', status: 'Gagal', badge: 'red' as const },
 ];
 
+function txStatusBadge(s: string): 'green' | 'yellow' | 'red' {
+  if (s === 'berhasil') return 'green';
+  if (s === 'pending') return 'yellow';
+  return 'red';
+}
+
 export default function PembayaranPage() {
+  const convexRevenue = useQuery(api.revenue.list);
+  const convexTransactions = useQuery(api.transactions.list);
+
+  const revenueData = convexRevenue ?? fallbackRevenue;
+  const transactions = convexTransactions
+    ? convexTransactions.map((t) => ({
+        id: t.transactionId,
+        donor: t.donorName,
+        amount: t.amountFormatted,
+        method: t.method,
+        program: t.program,
+        date: t.date,
+        status: t.status.charAt(0).toUpperCase() + t.status.slice(1),
+        badge: txStatusBadge(t.status),
+      }))
+    : fallbackTransactions;
   return (
     <DashboardLayout variant="admin" menuItems={menuItems} userName="Admin ID-MAP" userRole="Administrator" placeholder="Cari transaksi...">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">

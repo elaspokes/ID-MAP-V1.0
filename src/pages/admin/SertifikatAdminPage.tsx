@@ -2,6 +2,8 @@ import {
   Award, Download, Plus, Search, Eye, Send,
   CheckCircle2, Clock, FileText, Users, Printer, Calendar
 } from 'lucide-react';
+import { useQuery } from 'convex/react';
+import { api } from '../../../convex/_generated/api';
 import DashboardLayout from '../../components/DashboardLayout';
 import StatCard from '../../components/ui/StatCard';
 import Card from '../../components/ui/Card';
@@ -10,7 +12,7 @@ import Button from '../../components/ui/Button';
 import Table from '../../components/ui/Table';
 import menuItems from './adminMenuItems';
 
-const certificates = [
+const fallbackCertificates = [
   { id: 'CERT-001', recipient: 'Andi Pratama', program: 'Restorasi Teluk Bintuni', type: 'Sertifikat Kontributor', bibit: 10, carbon: '5,2 ton', issued: '10 Mei 2024', status: 'Diterbitkan', badge: 'green' as const },
   { id: 'CERT-002', recipient: 'PT Hijau Lestari', program: 'TN Sembilang', type: 'Sertifikat CSR', bibit: 500, carbon: '260 ton', issued: '8 Mei 2024', status: 'Diterbitkan', badge: 'green' as const },
   { id: 'CERT-003', recipient: 'Rudi Hermawan', program: 'Desa Timbulsloko', type: 'Sertifikat Kontributor', bibit: 25, carbon: '13 ton', issued: '5 Mei 2024', status: 'Diterbitkan', badge: 'green' as const },
@@ -26,7 +28,23 @@ const templates = [
   { name: 'Sertifikat Restorasi', desc: 'Sertifikat khusus untuk program restorasi yang selesai', count: 12 },
 ];
 
+function certStatusBadge(s: string): 'green' | 'yellow' | 'blue' {
+  if (s === 'diterbitkan') return 'green';
+  if (s === 'draft') return 'yellow';
+  return 'blue';
+}
+
 export default function SertifikatAdminPage() {
+  const convexCerts = useQuery(api.certificates.list);
+  const certificates = convexCerts
+    ? convexCerts.map((c) => ({
+        id: c.certificateId, recipient: c.recipient, program: c.program,
+        type: c.type, bibit: c.bibit, carbon: c.carbon, issued: c.issued,
+        status: c.status.charAt(0).toUpperCase() + c.status.slice(1),
+        badge: certStatusBadge(c.status),
+      }))
+    : fallbackCertificates;
+
   return (
     <DashboardLayout variant="admin" menuItems={menuItems} userName="Admin ID-MAP" userRole="Administrator" placeholder="Cari sertifikat...">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">

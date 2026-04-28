@@ -2,6 +2,8 @@ import {
   Database, Camera, MapPin, Upload, Download, Search,
   Thermometer, Droplets, Ruler, TreePine, Eye, Plus, Filter
 } from 'lucide-react';
+import { useQuery } from 'convex/react';
+import { api } from '../../../convex/_generated/api';
 import DashboardLayout from '../../components/DashboardLayout';
 import StatCard from '../../components/ui/StatCard';
 import Card from '../../components/ui/Card';
@@ -10,7 +12,7 @@ import Button from '../../components/ui/Button';
 import Table from '../../components/ui/Table';
 import menuItems from './verifikatorMenuItems';
 
-const fieldData = [
+const fallbackFieldData = [
   { id: 'FLD-001', loc: 'Desa Timbulsloko', date: '24 Mei 2024', species: 'R. mucronata', bibit: 45200, height: '98 cm', survival: '72%', salinity: '22 ppt', photos: 8, status: 'Terkirim', badge: 'green' as const },
   { id: 'FLD-002', loc: 'Teluk Bintuni', date: '22 Mei 2024', species: 'A. marina', bibit: 62300, height: '125 cm', survival: '85%', salinity: '28 ppt', photos: 12, status: 'Terkirim', badge: 'green' as const },
   { id: 'FLD-003', loc: 'TN Sembilang', date: '20 Mei 2024', species: 'S. alba', bibit: 80500, height: '145 cm', survival: '88%', salinity: '19 ppt', photos: 15, status: 'Draft', badge: 'yellow' as const },
@@ -25,7 +27,24 @@ const photoGallery = [
   { loc: 'Kwandang', date: '18 Mei 2024', count: 10, status: 'Proses', badge: 'blue' as const },
 ];
 
+function fieldStatusBadge(s: string): 'green' | 'yellow' | 'blue' {
+  if (s === 'terkirim') return 'green';
+  if (s === 'draft') return 'yellow';
+  return 'blue';
+}
+
 export default function DataLapanganPage() {
+  const convexFieldData = useQuery(api.fieldData.list);
+  const fieldData = convexFieldData
+    ? convexFieldData.map((f) => ({
+        id: f.fieldId, loc: f.location, date: f.date,
+        species: f.species, bibit: f.bibit, height: f.height,
+        survival: f.survivalRate, salinity: f.salinity, photos: f.photos,
+        status: f.status.charAt(0).toUpperCase() + f.status.slice(1),
+        badge: fieldStatusBadge(f.status),
+      }))
+    : fallbackFieldData;
+
   return (
     <DashboardLayout variant="verifikator" menuItems={menuItems} userName="Verifikator" userRole="Field Officer" placeholder="Cari data lapangan...">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">

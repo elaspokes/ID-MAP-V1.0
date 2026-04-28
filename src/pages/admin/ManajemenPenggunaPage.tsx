@@ -2,6 +2,8 @@ import {
   Users, UserPlus, UserCheck, UserX, Search, Filter, MoreHorizontal,
   Mail, Shield, Calendar, TrendingUp, Download
 } from 'lucide-react';
+import { useQuery } from 'convex/react';
+import { api } from '../../../convex/_generated/api';
 import DashboardLayout from '../../components/DashboardLayout';
 import StatCard from '../../components/ui/StatCard';
 import Card from '../../components/ui/Card';
@@ -10,7 +12,7 @@ import Button from '../../components/ui/Button';
 import Table from '../../components/ui/Table';
 import menuItems from './adminMenuItems';
 
-const users = [
+const fallbackUsers = [
   { id: 'USR-001', name: 'Andi Pratama', email: 'andi@email.com', role: 'Kontributor', status: 'Aktif', badge: 'green' as const, joined: '15 Jan 2024', kontribusi: 'Rp 1,2 M' },
   { id: 'USR-002', name: 'Sari Wulandari', email: 'sari@email.com', role: 'Verifikator', status: 'Aktif', badge: 'green' as const, joined: '22 Feb 2024', kontribusi: '-' },
   { id: 'USR-003', name: 'Bambang Sudirjo', email: 'bambang@email.com', role: 'Verifikator', status: 'Aktif', badge: 'green' as const, joined: '5 Mar 2024', kontribusi: '-' },
@@ -28,7 +30,32 @@ const roleDistribution = [
   { role: 'CSR Partner', count: 2054, percent: 16.6 },
 ];
 
+function roleBadge(r: string): 'green' | 'yellow' | 'gray' | 'blue' | 'neon' {
+  if (r === 'aktif') return 'green';
+  if (r === 'nonaktif') return 'gray';
+  if (r === 'pending') return 'yellow';
+  return 'green';
+}
+
+function roleLabel(r: string): string {
+  return r.charAt(0).toUpperCase() + r.slice(1);
+}
+
 export default function ManajemenPenggunaPage() {
+  const convexUsers = useQuery(api.users.list);
+  const users = convexUsers
+    ? convexUsers.map((u, i) => ({
+        id: `USR-${String(i + 1).padStart(3, '0')}`,
+        name: u.name,
+        email: u.email,
+        role: roleLabel(u.role),
+        status: roleLabel(u.status),
+        badge: roleBadge(u.status) as 'green' | 'yellow' | 'gray',
+        joined: u.joined,
+        kontribusi: u.kontribusi ?? '-',
+      }))
+    : fallbackUsers;
+
   return (
     <DashboardLayout variant="admin" menuItems={menuItems} userName="Admin ID-MAP" userRole="Administrator" placeholder="Cari pengguna...">
       <div className="mb-6">

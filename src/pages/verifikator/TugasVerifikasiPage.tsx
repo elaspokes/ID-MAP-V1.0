@@ -2,6 +2,8 @@ import {
   ClipboardCheck, CheckCircle2, Clock, XCircle, AlertCircle,
   Eye, Play, MapPin, Camera, Calendar, Filter, ChevronRight
 } from 'lucide-react';
+import { useQuery } from 'convex/react';
+import { api } from '../../../convex/_generated/api';
 import DashboardLayout from '../../components/DashboardLayout';
 import StatCard from '../../components/ui/StatCard';
 import Card from '../../components/ui/Card';
@@ -10,7 +12,7 @@ import Button from '../../components/ui/Button';
 import Table from '../../components/ui/Table';
 import menuItems from './verifikatorMenuItems';
 
-const tasks = [
+const fallbackTasks = [
   { id: 'VRF-0405-001', project: 'Desa Timbulsloko', loc: 'Demak, Jawa Tengah', type: 'Penanaman', bibit: '180.000', gps: '-6.8975, 110.6383', photos: 8, survivalRate: '72%', status: 'Menunggu', badge: 'yellow' as const, priority: 'Tinggi', deadline: '26 Mei 2024' },
   { id: 'VRF-0405-002', project: 'Teluk Bintuni', loc: 'Papua Barat', type: 'Monitoring', bibit: '250.000', gps: '-2.1234, 133.2345', photos: 12, survivalRate: '85%', status: 'Proses', badge: 'blue' as const, priority: 'Sedang', deadline: '28 Mei 2024' },
   { id: 'VRF-0405-003', project: 'TN Sembilang', loc: 'Sumatera Selatan', type: 'Penanaman', bibit: '320.000', gps: '-2.3456, 104.5678', photos: 6, survivalRate: '88%', status: 'Menunggu', badge: 'yellow' as const, priority: 'Tinggi', deadline: '25 Mei 2024' },
@@ -25,7 +27,25 @@ const upcomingTasks = [
   { project: 'Desa Timbulsloko', loc: 'Demak', type: 'Re-verifikasi', deadline: '8 Jun 2024', priority: 'Rendah' },
 ];
 
+function taskStatusBadge(s: string): 'green' | 'yellow' | 'blue' {
+  if (s === 'menunggu') return 'yellow';
+  if (s === 'proses') return 'blue';
+  return 'green';
+}
+
 export default function TugasVerifikasiPage() {
+  const convexValidations = useQuery(api.validations.list);
+  const tasks = convexValidations
+    ? convexValidations.map((v) => ({
+        id: v.validationId, project: v.project, loc: v.gps,
+        type: v.type, bibit: '0', gps: v.gps, photos: v.photos,
+        survivalRate: v.survivalRate,
+        status: v.status.charAt(0).toUpperCase() + v.status.slice(1),
+        badge: taskStatusBadge(v.status),
+        priority: 'Sedang', deadline: v.submitted,
+      }))
+    : fallbackTasks;
+
   return (
     <DashboardLayout variant="verifikator" menuItems={menuItems} userName="Verifikator" userRole="Field Officer" placeholder="Cari tugas...">
       <div className="mb-6">

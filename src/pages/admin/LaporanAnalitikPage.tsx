@@ -3,6 +3,8 @@ import {
   Users, DollarSign, TreePine, Wind, MapPin, FileText, Printer
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import { useQuery } from 'convex/react';
+import { api } from '../../../convex/_generated/api';
 import DashboardLayout from '../../components/DashboardLayout';
 import StatCard from '../../components/ui/StatCard';
 import Card from '../../components/ui/Card';
@@ -49,6 +51,8 @@ const reports = [
 ];
 
 export default function LaporanAnalitikPage() {
+  useQuery(api.revenue.list);
+
   return (
     <DashboardLayout variant="admin" menuItems={menuItems} userName="Admin ID-MAP" userRole="Administrator" placeholder="Cari laporan...">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
