@@ -310,9 +310,9 @@ export default function QRISPaymentPage() {
             <div className="w-20 h-20 mx-auto bg-mangrove-fresh/10 rounded-full flex items-center justify-center mb-6">
               <Check className="w-10 h-10 text-mangrove-fresh" />
             </div>
-            <h1 className="text-2xl font-bold mb-2">Pembayaran Berhasil!</h1>
+            <h1 className="text-2xl font-bold mb-2">Pembayaran Sedang Diverifikasi</h1>
             <p className="text-sm text-gray-400 mb-6">
-              Terima kasih atas kontribusi Anda untuk restorasi mangrove Indonesia
+              Terima kasih! Pembayaran Anda sedang diproses dan akan dikonfirmasi oleh admin.
             </p>
 
             {selectedPkg && (
