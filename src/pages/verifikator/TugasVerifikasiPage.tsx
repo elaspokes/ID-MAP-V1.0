@@ -38,8 +38,8 @@ export default function TugasVerifikasiPage() {
   const convexValidations = useQuery(api.validations.list);
   const tasks = convexValidations
     ? convexValidations.map((v) => ({
-        id: v.validationId, project: v.project, loc: v.gps,
-        type: v.type, bibit: '0', gps: v.gps, photos: v.photos,
+        id: v.validationId, project: v.project, loc: v.project,
+        type: v.type, bibit: '-', gps: v.gps, photos: v.photos,
         survivalRate: v.survivalRate,
         status: v.status.charAt(0).toUpperCase() + v.status.slice(1),
         badge: taskStatusBadge(v.status),
