@@ -27,9 +27,10 @@ const upcomingTasks = [
   { project: 'Desa Timbulsloko', loc: 'Demak', type: 'Re-verifikasi', deadline: '8 Jun 2024', priority: 'Rendah' },
 ];
 
-function taskStatusBadge(s: string): 'green' | 'yellow' | 'blue' {
+function taskStatusBadge(s: string): 'green' | 'yellow' | 'blue' | 'red' {
   if (s === 'menunggu') return 'yellow';
   if (s === 'proses') return 'blue';
+  if (s === 'ditolak') return 'red';
   return 'green';
 }
 

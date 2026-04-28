@@ -36,9 +36,10 @@ const performanceData = [
   { loc: 'Gorontalo Utara', verified: 4, pending: 2, rejected: 1, score: 60 },
 ];
 
-function valStatusBadge(s: string): 'green' | 'yellow' | 'blue' {
+function valStatusBadge(s: string): 'green' | 'yellow' | 'blue' | 'red' {
   if (s === 'menunggu') return 'yellow';
   if (s === 'proses') return 'blue';
+  if (s === 'ditolak') return 'red';
   return 'green';
 }
 
