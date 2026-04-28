@@ -11,7 +11,7 @@ export interface AuthUser {
 export interface AuthContextType {
   user: AuthUser | null;
   login: (email: string, password: string, role: 'admin' | 'verifikator') => Promise<boolean>;
-  loginWithMagicLink: (email: string, whatsapp: string, packageType: string) => void;
+  loginWithMagicLink: (email: string, whatsapp: string, packageType: string, token: string) => void;
   logout: () => void;
   isAuthenticated: boolean;
 }

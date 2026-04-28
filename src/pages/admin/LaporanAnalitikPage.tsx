@@ -51,7 +51,11 @@ const reports = [
 ];
 
 export default function LaporanAnalitikPage() {
-  useQuery(api.revenue.list);
+  const convexRevenue = useQuery(api.revenue.list);
+
+  const chartData = convexRevenue && convexRevenue.length > 0
+    ? convexRevenue.map(r => ({ month: r.month, donasi: r.value, pengguna: 0, bibit: 0 }))
+    : monthlyData;
 
   return (
     <DashboardLayout variant="admin" menuItems={menuItems} userName="Admin ID-MAP" userRole="Administrator" placeholder="Cari laporan...">
@@ -85,7 +89,7 @@ export default function LaporanAnalitikPage() {
             </select>
           </div>
           <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={monthlyData}>
+            <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="repGreen" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#B7FF2A" stopOpacity={0.3} />

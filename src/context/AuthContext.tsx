@@ -43,7 +43,7 @@ function AuthProviderInner({ children }: { children: ReactNode }) {
     return false;
   }, [convexLogin]);
 
-  const loginWithMagicLink = useCallback((email: string, whatsapp: string, packageType: string) => {
+  const loginWithMagicLink = useCallback((email: string, whatsapp: string, packageType: string, token: string) => {
     setUser({
       email,
       role: null,
@@ -52,7 +52,6 @@ function AuthProviderInner({ children }: { children: ReactNode }) {
     const donationData = { email, whatsapp, packageType, date: new Date().toISOString() };
     localStorage.setItem('idmap_donation', JSON.stringify(donationData));
 
-    const token = btoa(`${email}:${Date.now()}`).slice(0, 20);
     convexCreateDonation({
       email,
       whatsapp,

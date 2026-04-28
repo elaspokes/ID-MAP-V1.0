@@ -3,7 +3,9 @@ import { v } from "convex/values";
 
 export const list = query({
   handler: async (ctx) => {
-    return await ctx.db.query("users").collect();
+    const users = await ctx.db.query("users").collect();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    return users.map(({ password: _p, ...rest }) => rest);
   },
 });
 

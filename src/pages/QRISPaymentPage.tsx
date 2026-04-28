@@ -68,7 +68,7 @@ export default function QRISPaymentPage() {
       const token = btoa(`${email}:${Date.now()}`).slice(0, 20);
       const link = `${window.location.origin}${window.location.pathname}#/user?token=${token}`;
       setMagicLink(link);
-      loginWithMagicLink(email, whatsapp, selectedPackage || '15k');
+      loginWithMagicLink(email, whatsapp, selectedPackage || '15k', token);
 
       const pkg = packages.find(p => p.id === selectedPackage);
       createTransaction({
