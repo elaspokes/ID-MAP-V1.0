@@ -8,40 +8,36 @@ import './index.css'
 import App from './App'
 
 const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
-const CONVEX_URL = import.meta.env.VITE_CONVEX_URL
+const CONVEX_URL = import.meta.env.VITE_CONVEX_URL as string | undefined
 
 if (!CLERK_PUBLISHABLE_KEY) {
   console.warn('Missing VITE_CLERK_PUBLISHABLE_KEY — Clerk auth will not work')
 }
 
 if (!CONVEX_URL) {
-  console.warn('Missing VITE_CONVEX_URL — Convex database will not work')
+  console.warn('Missing VITE_CONVEX_URL — Convex database will not work, using fallback data')
 }
 
-const convex = CONVEX_URL ? new ConvexReactClient(CONVEX_URL) : null
+const convex = new ConvexReactClient(CONVEX_URL || 'https://placeholder.convex.cloud')
 
 const appTree = (
-  <AuthProvider>
-    <HashRouter>
-      <App />
-    </HashRouter>
-  </AuthProvider>
-)
-
-const withConvex = convex ? (
   <ConvexProvider client={convex}>
-    {appTree}
+    <AuthProvider>
+      <HashRouter>
+        <App />
+      </HashRouter>
+    </AuthProvider>
   </ConvexProvider>
-) : appTree
+)
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     {CLERK_PUBLISHABLE_KEY ? (
       <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
-        {withConvex}
+        {appTree}
       </ClerkProvider>
     ) : (
-      withConvex
+      appTree
     )}
   </StrictMode>,
 )

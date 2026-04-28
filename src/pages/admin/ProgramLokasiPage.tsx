@@ -57,12 +57,23 @@ export default function ProgramLokasiPage() {
 
   const locations = convexPrograms
     ? Object.values(
-        convexPrograms.reduce<Record<string, { province: string; programs: number; area: string; bibit: string }>>((acc, p) => {
-          if (!acc[p.province]) acc[p.province] = { province: p.province, programs: 0, area: p.area, bibit: p.bibit };
+        convexPrograms.reduce<Record<string, { province: string; programs: number; areaNum: number; bibitNum: number }>>((acc, p) => {
+          const areaNum = parseInt(p.area) || 0;
+          const bibitNum = parseInt(p.bibit.replace(/\./g, '')) || 0;
+          if (!acc[p.province]) {
+            acc[p.province] = { province: p.province, programs: 0, areaNum: 0, bibitNum: 0 };
+          }
           acc[p.province].programs += 1;
+          acc[p.province].areaNum += areaNum;
+          acc[p.province].bibitNum += bibitNum;
           return acc;
         }, {})
-      )
+      ).map(r => ({
+        province: r.province,
+        programs: r.programs,
+        area: `${r.areaNum.toLocaleString('id-ID')} Ha`,
+        bibit: r.bibitNum.toLocaleString('id-ID'),
+      }))
     : fallbackLocations;
   return (
     <DashboardLayout variant="admin" menuItems={menuItems} userName="Admin ID-MAP" userRole="Administrator" placeholder="Cari program...">
