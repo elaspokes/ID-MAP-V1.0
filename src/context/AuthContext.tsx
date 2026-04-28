@@ -63,7 +63,7 @@ function AuthProviderInner({ children }: { children: ReactNode }) {
       packageType,
       amount: packageType === '30k' ? 30000 : 15000,
       magicLinkToken: token,
-      status: 'completed',
+      status: 'pending',
       createdAt: new Date().toISOString(),
     }).catch(() => { /* Convex unavailable, donation saved to localStorage */ });
   }, [convexCreateDonation]);

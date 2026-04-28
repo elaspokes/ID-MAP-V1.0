@@ -80,7 +80,7 @@ export default function QRISPaymentPage() {
         method: 'QRIS',
         program: 'Donasi Mangrove',
         date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }),
-        status: 'berhasil',
+        status: 'pending',
         whatsapp,
         packageType: selectedPackage || '15k',
       }).catch(() => { /* Convex unavailable */ });
