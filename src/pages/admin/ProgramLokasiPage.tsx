@@ -2,6 +2,8 @@ import {
   MapPin, TreePine, Plus, Search, Eye, Edit, Trash2,
   Globe, Layers, TrendingUp, Calendar
 } from 'lucide-react';
+import { useQuery } from 'convex/react';
+import { api } from '../../../convex/_generated/api';
 import DashboardLayout from '../../components/DashboardLayout';
 import StatCard from '../../components/ui/StatCard';
 import Card from '../../components/ui/Card';
@@ -12,7 +14,7 @@ import Table from '../../components/ui/Table';
 import MangroveMap from '../../components/MangroveMap';
 import menuItems from './adminMenuItems';
 
-const programs = [
+const fallbackPrograms = [
   { id: 'PRG-001', name: 'Restorasi Teluk Bintuni', loc: 'Papua Barat', area: '450 Ha', bibit: '250.000', status: 'Aktif', badge: 'green' as const, progress: 75, started: 'Jan 2024' },
   { id: 'PRG-002', name: 'Desa Timbulsloko', loc: 'Demak, Jawa Tengah', area: '180 Ha', bibit: '180.000', status: 'Verifikasi', badge: 'yellow' as const, progress: 43, started: 'Feb 2024' },
   { id: 'PRG-003', name: 'TN Sembilang', loc: 'Sumatera Selatan', area: '620 Ha', bibit: '320.000', status: 'Aktif', badge: 'green' as const, progress: 80, started: 'Mar 2024' },
@@ -21,7 +23,7 @@ const programs = [
   { id: 'PRG-006', name: 'Segara Anakan', loc: 'Cilacap, Jawa Tengah', area: '200 Ha', bibit: '120.000', status: 'Restorasi', badge: 'neon' as const, progress: 58, started: 'Mar 2024' },
 ];
 
-const locations = [
+const fallbackLocations = [
   { province: 'Papua Barat', programs: 2, area: '730 Ha', bibit: '345.000' },
   { province: 'Jawa Tengah', programs: 3, area: '380 Ha', bibit: '300.000' },
   { province: 'Sumatera Selatan', programs: 1, area: '620 Ha', bibit: '320.000' },
@@ -29,7 +31,50 @@ const locations = [
   { province: 'Gorontalo Utara', programs: 1, area: '150 Ha', bibit: '150.000' },
 ];
 
+function statusBadge(s: string): 'green' | 'yellow' | 'blue' | 'neon' {
+  if (s === 'aktif') return 'green';
+  if (s === 'verifikasi') return 'yellow';
+  if (s === 'monitoring') return 'blue';
+  if (s === 'restorasi') return 'neon';
+  return 'green';
+}
+
 export default function ProgramLokasiPage() {
+  const convexPrograms = useQuery(api.programs.list);
+  const programs = convexPrograms
+    ? convexPrograms.map((p) => ({
+        id: p.programId,
+        name: p.name,
+        loc: `${p.location}, ${p.province}`,
+        area: p.area,
+        bibit: p.bibit,
+        status: p.status.charAt(0).toUpperCase() + p.status.slice(1),
+        badge: statusBadge(p.status),
+        progress: p.progress,
+        started: p.started,
+      }))
+    : fallbackPrograms;
+
+  const locations = convexPrograms
+    ? Object.values(
+        convexPrograms.reduce<Record<string, { province: string; programs: number; areaNum: number; bibitNum: number }>>((acc, p) => {
+          const areaNum = parseInt(p.area) || 0;
+          const bibitNum = parseInt(p.bibit.replace(/\./g, '')) || 0;
+          if (!acc[p.province]) {
+            acc[p.province] = { province: p.province, programs: 0, areaNum: 0, bibitNum: 0 };
+          }
+          acc[p.province].programs += 1;
+          acc[p.province].areaNum += areaNum;
+          acc[p.province].bibitNum += bibitNum;
+          return acc;
+        }, {})
+      ).map(r => ({
+        province: r.province,
+        programs: r.programs,
+        area: `${r.areaNum.toLocaleString('id-ID')} Ha`,
+        bibit: r.bibitNum.toLocaleString('id-ID'),
+      }))
+    : fallbackLocations;
   return (
     <DashboardLayout variant="admin" menuItems={menuItems} userName="Admin ID-MAP" userRole="Administrator" placeholder="Cari program...">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">

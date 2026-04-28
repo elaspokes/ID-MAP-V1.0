@@ -2,6 +2,8 @@ import {
   TreePine, Sprout, Droplets, Wind, Thermometer, Ruler,
   Search, Download, Plus, Eye, TrendingUp, Leaf
 } from 'lucide-react';
+import { useQuery } from 'convex/react';
+import { api } from '../../../convex/_generated/api';
 import DashboardLayout from '../../components/DashboardLayout';
 import StatCard from '../../components/ui/StatCard';
 import Card from '../../components/ui/Card';
@@ -12,7 +14,7 @@ import Table from '../../components/ui/Table';
 import MangroveMap from '../../components/MangroveMap';
 import menuItems from './adminMenuItems';
 
-const speciesData = [
+const fallbackSpecies = [
   { name: 'Rhizophora mucronata', local: 'Bakau', count: '452.300', area: '890 Ha', survival: 85, status: 'Dominan', badge: 'green' as const },
   { name: 'Avicennia marina', local: 'Api-api', count: '328.100', area: '520 Ha', survival: 78, status: 'Stabil', badge: 'green' as const },
   { name: 'Sonneratia alba', local: 'Pedada', count: '215.400', area: '340 Ha', survival: 72, status: 'Berkembang', badge: 'blue' as const },
@@ -20,7 +22,7 @@ const speciesData = [
   { name: 'Ceriops tagal', local: 'Tengar', count: '100.000', area: '130 Ha', survival: 82, status: 'Baru', badge: 'yellow' as const },
 ];
 
-const growthRecords = [
+const fallbackGrowth = [
   { loc: 'Teluk Bintuni', species: 'R. mucronata', height: '125 cm', diameter: '4,2 cm', age: '18 bulan', health: 'Baik', badge: 'green' as const },
   { loc: 'Desa Timbulsloko', species: 'A. marina', height: '98 cm', diameter: '3,1 cm', age: '12 bulan', health: 'Cukup', badge: 'yellow' as const },
   { loc: 'TN Sembilang', species: 'S. alba', height: '145 cm', diameter: '5,0 cm', age: '24 bulan', health: 'Baik', badge: 'green' as const },
@@ -34,7 +36,33 @@ const envMetrics = [
   { label: 'Kecepatan Angin', value: '12 km/h', icon: <Wind className="w-4 h-4" />, change: 'Tenang' },
 ];
 
+function speciesStatusBadge(s: string): 'green' | 'blue' | 'yellow' {
+  if (s === 'Dominan' || s === 'Stabil') return 'green';
+  if (s === 'Berkembang') return 'blue';
+  return 'yellow';
+}
+
+function healthBadge(h: string): 'green' | 'yellow' {
+  return h === 'Baik' ? 'green' : 'yellow';
+}
+
 export default function DataMangrovePage() {
+  const convexSpecies = useQuery(api.mangrove.listSpecies);
+  const convexGrowth = useQuery(api.mangrove.listGrowthRecords);
+
+  const speciesData = convexSpecies
+    ? convexSpecies.map((s) => ({
+        name: s.name, local: s.localName, count: s.count, area: s.area,
+        survival: s.survivalRate, status: s.status, badge: speciesStatusBadge(s.status),
+      }))
+    : fallbackSpecies;
+
+  const growthRecords = convexGrowth
+    ? convexGrowth.map((g) => ({
+        loc: g.location, species: g.species, height: g.height,
+        diameter: g.diameter, age: g.age, health: g.health, badge: healthBadge(g.health),
+      }))
+    : fallbackGrowth;
   return (
     <DashboardLayout variant="admin" menuItems={menuItems} userName="Admin ID-MAP" userRole="Administrator" placeholder="Cari data mangrove...">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
